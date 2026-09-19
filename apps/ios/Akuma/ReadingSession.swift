@@ -84,7 +84,7 @@ final class ReadingSession: ObservableObject {
             ]
             session.draft = "今日はいい天気です。\n猫と一緒に散歩します。"
             session.result = ReadingResult(source: session.draft, words: words, originalWords: words)
-            session.showsResult = true
+            session.showsResult = scene != "guide"
         }
         return session
     }

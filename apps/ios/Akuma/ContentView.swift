@@ -40,6 +40,7 @@ struct ContentView: View {
                             set: { if !$0 { session.editDraft() } }
                         )) {
                             resultPanel(isCompact: true)
+                                .navigationBarBackButtonHidden(true)
                                 .navigationTitle(text.result)
                                 .navigationBarTitleDisplayMode(.inline)
                         }
@@ -111,9 +112,7 @@ struct ContentView: View {
             showAccent: $showAccent,
             isDarkResult: colorScheme == .dark,
             text: text,
-            guideLabel: guideText.guide,
-            isCompact: isCompact,
-            onOpenGuide: { isGuidePresented = true }
+            isCompact: isCompact
         )
     }
 
@@ -241,8 +240,7 @@ private struct AppText {
 
     var tryExample: String { localized("Try an example", "例文を試す", "試用範例") }
     var viewSavedResult: String { localized("View saved result", "保存した結果を見る", "查看已儲存結果") }
-    var savedResultHint: String { localized("Saved result · Draft has changes", "保存済みの結果・文章に変更があります", "已儲存結果・文字已有變更") }
-    var tapWordHint: String { localized("Tap a word to edit its reading or pitch.", "単語をタップして、ふりがなやアクセントを編集できます。", "點按詞語即可編輯假名或音調。") }
+    var returnToEditing: String { localized("Back to editing", "編集に戻る", "回到編輯") }
     var pitchPreview: String { localized("Pitch preview", "アクセントのプレビュー", "音調預覽") }
     var tapMoraHint: String { localized("Tap a mora to place the pitch drop.", "拍をタップして、下降位置を選びます。", "點按音拍以選擇下降位置。") }
     var discardChanges: String { localized("Discard changes", "変更を破棄", "捨棄變更") }
@@ -386,15 +384,9 @@ private struct AppText {
 
 private struct GuideText {
     let guide: String
-    let pitchHeading: String
-    let pitchIntro: String
-    let pitchNoneTitle: String
-    let pitchNoneBody: String
-    let pitchHighTitle: String
-    let pitchHighBody: String
-    let pitchDropTitle: String
-    let pitchDropBody: String
     let editBody: String
+    let pitchBody: String
+    let historyBody: String
     let shareBody: String
     let close: String
 
@@ -407,46 +399,28 @@ private struct GuideText {
 
     static let en = GuideText(
         guide: "Guide",
-        pitchHeading: "Why the accent line matters",
-        pitchIntro: "Pitch can affect both naturalness and word meaning. AkuMa marks where the voice stays high and where it falls.",
-        pitchNoneTitle: "Low / follows",
-        pitchNoneBody: "Particles can follow the previous word instead of carrying their own high mark.",
-        pitchHighTitle: "High, no fall",
-        pitchHighBody: "The marked span stays high with no fall inside the word.",
-        pitchDropTitle: "High, then fall",
-        pitchDropBody: "The voice falls after this mora; following particles shift low.",
-        editBody: "Tap a word to edit its full reading and pitch pattern. Undo, redo, or restore from the actions menu.",
-        shareBody: "Share the result as an image and readable text through the system share sheet.",
+        editBody: "Tap a word to edit reading and pitch.",
+        pitchBody: "Toggle pitch marks with the eye button.",
+        historyBody: "Undo, redo, or restore in More.",
+        shareBody: "Share as image and text.",
         close: "Close"
     )
 
     static let ja = GuideText(
         guide: "使い方",
-        pitchHeading: "アクセント線の見方",
-        pitchIntro: "ピッチアクセントは自然さだけでなく、単語の意味にも影響します。声が高い部分と下がる位置を線で示します。",
-        pitchNoneTitle: "低い・前に従う",
-        pitchNoneBody: "助詞などは独自の高い印を持たず、前の単語のピッチに従います。",
-        pitchHighTitle: "高い・下降なし",
-        pitchHighBody: "印のある範囲は高いままで、単語の途中では下がりません。",
-        pitchDropTitle: "高い・その後下降",
-        pitchDropBody: "この拍の後で声が下がり、後続する助詞も低くなります。",
-        editBody: "単語をタップすると、ふりがな全体とアクセントを編集できます。取り消し・やり直し・全復元は操作メニューにあります。",
-        shareBody: "結果は画像と読みやすいテキストとして、iOSの共有シートから共有できます。",
+        editBody: "単語をタップして読み・アクセントを編集。",
+        pitchBody: "目のボタンでアクセント表示を切り替え。",
+        historyBody: "その他から取り消し・やり直し・復元。",
+        shareBody: "画像とテキストで共有。",
         close: "閉じる"
     )
 
     static let zh = GuideText(
-        guide: "指南",
-        pitchHeading: "如何閱讀音調線",
-        pitchIntro: "音調不只影響自然度，也可能改變詞義。線條會標示高音範圍與下降位置。",
-        pitchNoneTitle: "低音／承接前詞",
-        pitchNoneBody: "部分助詞沒有自己的高音標記，而是承接前一個詞的音調。",
-        pitchHighTitle: "高音、不下降",
-        pitchHighBody: "標記範圍維持高音，詞內不會下降。",
-        pitchDropTitle: "高音、隨後下降",
-        pitchDropBody: "聲音在這一拍之後下降，後接助詞也會轉為低音。",
-        editBody: "點按一個詞即可編輯完整假名與音調。復原、重做與全部還原位於操作選單。",
-        shareBody: "透過 iOS 分享面板，以圖片和易讀文字分享結果。",
+        guide: "操作說明",
+        editBody: "點按詞語，編輯讀音與音調。",
+        pitchBody: "點按眼睛，切換音調標記。",
+        historyBody: "在「更多」中復原、重做或還原。",
+        shareBody: "分享圖片與文字。",
         close: "關閉"
     )
 }
@@ -458,21 +432,10 @@ private struct GuideView: View {
     var body: some View {
         NavigationStack {
             List {
-                Section {
-                    Text(text.pitchIntro)
-                        .foregroundStyle(.secondary)
-                }
-
-                Section(text.pitchHeading) {
-                    PitchGuideCard(title: text.pitchNoneTitle, detail: text.pitchNoneBody, accent: .none)
-                    PitchGuideCard(title: text.pitchHighTitle, detail: text.pitchHighBody, accent: .flat)
-                    PitchGuideCard(title: text.pitchDropTitle, detail: text.pitchDropBody, accent: .drop)
-                }
-
-                Section {
-                    Label(text.editBody, systemImage: "hand.tap")
-                    Label(text.shareBody, systemImage: "square.and.arrow.up")
-                }
+                Label(text.editBody, systemImage: "hand.tap")
+                Label(text.pitchBody, systemImage: "eye")
+                Label(text.historyBody, systemImage: "ellipsis.circle")
+                Label(text.shareBody, systemImage: "square.and.arrow.up")
             }
             .navigationTitle(text.guide)
             .navigationBarTitleDisplayMode(.inline)
@@ -482,33 +445,6 @@ private struct GuideView: View {
                 }
             }
         }
-    }
-}
-
-private struct PitchGuideCard: View {
-    let title: String
-    let detail: String
-    let accent: AccentKind
-
-    var body: some View {
-        HStack(alignment: .top, spacing: AkumaTheme.space4) {
-            VStack(spacing: AkumaTheme.space2) {
-                AccentLineView(accent: accent, isVisible: true)
-                    .frame(width: 40, height: 16)
-                Text("あ")
-                    .font(.title2)
-            }
-            .frame(width: 48)
-
-            VStack(alignment: .leading, spacing: AkumaTheme.space1) {
-                Text(title).font(.headline)
-                Text(detail)
-                    .font(.subheadline)
-                    .foregroundStyle(AkumaTheme.secondaryText)
-            }
-        }
-        .padding(.vertical, AkumaTheme.space1)
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 
@@ -592,9 +528,7 @@ private struct ResultPanel: View {
     @Binding var showAccent: Bool
     let isDarkResult: Bool
     let text: AppText
-    let guideLabel: String
     let isCompact: Bool
-    let onOpenGuide: () -> Void
 
     private var editAction: (() -> Void)? {
         guard isCompact else { return nil }
@@ -615,19 +549,12 @@ private struct ResultPanel: View {
                         if session.result != nil {
                             Button(text.viewSavedResult) { session.openSavedResult() }
                         }
-                        Button(text.editInput) { session.editDraft() }
+                        Button(text.returnToEditing) { session.editDraft() }
                     }
                 } else if session.phase == .loading {
                     SkeletonResultView(paragraph: session.draft, isDarkResult: isDarkResult, analyzingText: text.analyzing)
                         .accessibilityHidden(true)
                 } else {
-                    if !session.isBusy, let result = session.result, result.source != session.draft {
-                        Label(text.savedResultHint, systemImage: "doc.badge.clock")
-                            .font(.footnote)
-                            .foregroundStyle(.secondary)
-                            .padding(.horizontal)
-                            .padding(.top, AkumaTheme.space2)
-                    }
                     ResultContentView(
                         words: session.isBusy ? session.streamedWords : session.result?.words ?? [],
                         showAccent: showAccent,
@@ -665,9 +592,7 @@ private struct ResultPanel: View {
                         onUndo: session.undo,
                         onRedo: session.redo,
                         onRestore: session.restore,
-                        onEdit: editAction,
-                        guideLabel: guideLabel,
-                        onOpenGuide: onOpenGuide
+                        onEdit: editAction
                     )
                     .background(.bar)
                 }
@@ -708,7 +633,6 @@ private struct ResultContentView: View {
     var isInteractive = true
     let onUpdateWord: (Int, String, Int) -> Void
     @State private var editTarget: ReadingEditTarget?
-    @AppStorage("didEditWord") private var didEditWord = false
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
     var body: some View {
@@ -729,14 +653,6 @@ private struct ResultContentView: View {
                     .padding(.top, 40)
                     .padding(.horizontal, AkumaTheme.space5)
             } else {
-                if isInteractive && !didEditWord {
-                    Text(text.tapWordHint)
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, AkumaTheme.space5)
-                        .padding(.top, AkumaTheme.space3)
-                }
                 FlowLayout(spacing: 0, lineSpacing: 10) {
                     ForEach(Array(words.enumerated()), id: \.offset) { wordIndex, word in
                         AccentWordView(
@@ -753,7 +669,6 @@ private struct ResultContentView: View {
                                 )
                             },
                             onEdit: {
-                                didEditWord = true
                                 editTarget = ReadingEditTarget(
                                     wordIndex: wordIndex,
                                     surface: word.surface,
@@ -1232,8 +1147,6 @@ private struct ResultActions: View {
     let onRedo: () -> Void
     let onRestore: () -> Void
     let onEdit: (() -> Void)?
-    let guideLabel: String
-    let onOpenGuide: () -> Void
     @State private var isRestoreConfirmationVisible = false
     @State private var sharePayload: SharePayload?
 
@@ -1245,7 +1158,7 @@ private struct ResultActions: View {
         HStack(spacing: isCompact ? 0 : AkumaTheme.space2) {
             if let onEdit {
                 Button(action: onEdit) {
-                    Label(text.editInput, systemImage: "pencil")
+                    Text(text.returnToEditing)
                         .font(.body)
                         .fixedSize(horizontal: false, vertical: true)
                         .frame(minHeight: 44)
@@ -1257,22 +1170,12 @@ private struct ResultActions: View {
             Button {
                 showAccent.toggle()
             } label: {
-                if isCompact {
-                    Image(systemName: showAccent ? "eye" : "eye.slash")
-                        .font(.system(size: 18, weight: .semibold))
-                        .frame(width: AkumaTheme.actionControlSize, height: AkumaTheme.actionControlSize)
-                } else {
-                    Label(
-                        showAccent ? text.hideAccent : text.showAccent,
-                        systemImage: showAccent ? "eye" : "eye.slash"
-                    )
-                        .font(.subheadline)
-                        .lineLimit(1)
-                        .frame(height: AkumaTheme.actionControlSize)
-                        .padding(.horizontal, AkumaTheme.space3)
-                }
+                Image(systemName: showAccent ? "eye" : "eye.slash")
+                    .font(.body)
+                    .frame(width: AkumaTheme.actionControlSize, height: AkumaTheme.actionControlSize)
+                    .contentShape(Rectangle())
             }
-            .buttonStyle(PanelButtonStyle(isDark: isDarkResult, isActive: showAccent))
+            .buttonStyle(.plain)
             .accessibilityLabel(showAccent ? text.hideAccent : text.showAccent)
 
             Spacer(minLength: AkumaTheme.space2)
@@ -1295,7 +1198,6 @@ private struct ResultActions: View {
 
             Group {
                 Menu {
-                    Button(action: onOpenGuide) { Label(guideLabel, systemImage: "questionmark.circle") }
                     Section {
                         if canUndo {
                             Button(action: onUndo) {
@@ -1326,6 +1228,7 @@ private struct ResultActions: View {
                 }
                 .buttonStyle(PanelButtonStyle(isDark: isDarkResult))
                 .accessibilityLabel(text.resultOptions)
+                .disabled(!canUndo && !canRedo && !canRestore)
             }
         }
         .padding(.horizontal, isCompact ? AkumaTheme.space4 : AkumaTheme.space5)

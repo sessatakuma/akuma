@@ -20,7 +20,7 @@ Undo and redo let you explore different readings. Your draft and completed
 result stay available when you reopen the app.
 
 Share your result as an image and readable text using the iOS share sheet.
-The built-in guide explains how to read the pitch markings.
+The built-in guide covers editing, pitch visibility, undo, and sharing.
 
 Analysis needs an internet connection. Automatically generated readings and
 accent markings can require correction. AkuMa supports iPhone and iPad in
