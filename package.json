@@ -6,6 +6,11 @@
     "scripts": {
         "dev": "next dev",
         "build": "next build",
+        "ios": "scripts/ios-run-simulator.sh",
+        "iphone": "bash scripts/ios-run-device.sh",
+        "ios:check": "scripts/ios-check.sh",
+        "ios:test": "bash scripts/ios-test.sh",
+        "ios:screenshot": "scripts/ios-screenshot.sh",
         "lint": "eslint .",
         "format": "prettier . --write",
         "format:check": "prettier . --check",
@@ -16,7 +21,15 @@
         "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy -- --keep-vars",
         "upload": "opennextjs-cloudflare build && opennextjs-cloudflare upload",
         "cf-typegen": "wrangler types --env-interface CloudflareEnv cloudflare-env.d.ts",
-        "typecheck": "tsc --noEmit"
+        "typecheck": "tsc --noEmit",
+        "ios:archive": "bash scripts/ios-release.sh archive",
+        "ios:export": "bash scripts/ios-release.sh export",
+        "ios:upload": "bash scripts/ios-release.sh upload",
+        "ios:release": "bash scripts/ios-release.sh release",
+        "ios:release:check": "bash scripts/ios-release.sh check",
+        "ios:screenshots": "bash scripts/ios-capture-app-store-screenshots.sh",
+        "ios:pipeline:test": "python3 tests/ios/release_pipeline_test.py",
+        "ios:build": "scripts/ios-build.sh"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx,css,scss,html,json,md,yml,yaml}": [
