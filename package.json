@@ -11,7 +11,6 @@
         "ios:check": "scripts/ios-check.sh",
         "ios:test": "bash scripts/ios-test.sh",
         "ios:screenshot": "scripts/ios-screenshot.sh",
-        "ios:simulator": "scripts/ios-build.sh",
         "lint": "eslint .",
         "format": "prettier . --write",
         "format:check": "prettier . --check",
@@ -29,7 +28,8 @@
         "ios:release": "bash scripts/ios-release.sh release",
         "ios:release:check": "bash scripts/ios-release.sh check",
         "ios:screenshots": "bash scripts/ios-capture-app-store-screenshots.sh",
-        "ios:pipeline:test": "python3 tests/ios/release_pipeline_test.py"
+        "ios:pipeline:test": "python3 tests/ios/release_pipeline_test.py",
+        "ios:build": "scripts/ios-build.sh"
     },
     "lint-staged": {
         "*.{js,jsx,ts,tsx,css,scss,html,json,md,yml,yaml}": [
