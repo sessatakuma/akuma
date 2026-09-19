@@ -1,0 +1,42 @@
+name: iOS Quality Checks
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ios-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  ios:
+    name: Build and test iOS
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Toolchain
+        run: xcodebuild -version
+      - name: Release pipeline tests
+        run: python3 tests/ios/release_pipeline_test.py
+      - name: Session regression tests
+        run: bash scripts/ios-test.sh
+      - name: Project checks
+        run: bash scripts/ios-check.sh
+      - name: Debug simulator build
+        run: bash scripts/ios-build.sh
+      - name: Release device build (unsigned)
+        env:
+          IOS_CONFIGURATION: Release
+          IOS_SDK: iphoneos
+          IOS_DESTINATION: generic/platform=iOS
+          IOS_DERIVED_DATA_PATH: build/ReleaseValidation
+        run: bash scripts/ios-build.sh
+      - name: Validate packaged app
+        run: python3 scripts/ios-validate-app.py build/ReleaseValidation/Build/Products/Release-iphoneos/Akuma.app

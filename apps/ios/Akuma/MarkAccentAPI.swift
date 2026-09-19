@@ -46,7 +46,11 @@ enum MarkAccentAPI {
     }
 
     private static func streamEndpoint() throws -> URL {
+        #if DEBUG
         let configuredOrigin = ProcessInfo.processInfo.environment["AKUMA_API_ORIGIN"] ?? productionOrigin
+        #else
+        let configuredOrigin = productionOrigin
+        #endif
         let origin = configuredOrigin.trimmingCharacters(in: .whitespacesAndNewlines).trimmingTrailingSlash()
         guard let url = URL(string: "\(origin)\(streamPath)") else {
             throw APIError.invalidURL

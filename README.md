@@ -31,6 +31,31 @@ Start the local dev server:
 bun dev
 ```
 
+## iOS Development
+
+Update AkuMa on your paired iPhone (USB or wireless):
+
+```bash
+bun run iphone
+```
+
+This builds a signed app, installs it over the existing app without uninstalling,
+and relaunches it. Keep your iPhone unlocked. Use `bun run ios` for the simulator.
+
+The device script uses the Xcode project's signing team. If one isn't configured,
+set `APPLE_TEAM_ID` in your environment or in a git-ignored `.env.local` file:
+
+```dotenv
+APPLE_TEAM_ID=YOUR_TEAM_ID
+```
+
+If multiple iPhones are available, select one with
+`IOS_DEVICE_ID=<UDID> bun run iphone`. Find its UDID with
+`xcrun devicectl list devices`. Run `bun run iphone --help` for other options.
+
+For signed archives, TestFlight uploads, screenshots, and App Store handoff, see
+[the iOS release workflow](docs/ios-release.md). Start with `bun run ios:release --help`.
+
 ## Local API Setup (Internal Development)
 
 Production on Cloudflare manages the upstream API key server-side.

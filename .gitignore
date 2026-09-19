@@ -1,5 +1,6 @@
 # Environment variables
 .env
+.env.local
 
 # Dependencies
 node_modules/
@@ -17,3 +18,11 @@ tsconfig.tsbuildinfo
 .open-next/
 .wrangler/
 cloudflare-env.d.ts
+
+# Local Apple signing credentials
+*.p8
+*.p12
+*.mobileprovision
+
+# Python script caches
+__pycache__/

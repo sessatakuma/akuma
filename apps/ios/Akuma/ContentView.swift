@@ -3,7 +3,16 @@ import SwiftUI
 import UIKit
 
 struct ContentView: View {
-    @StateObject private var session = ReadingSession()
+    @StateObject private var session = ContentView.initialSession()
+
+    private static func initialSession() -> ReadingSession {
+        #if DEBUG
+        if let scene = ProcessInfo.processInfo.environment["AKUMA_SCREENSHOT_SCENE"] {
+            return ReadingSession.screenshotSession(scene: scene)
+        }
+        #endif
+        return ReadingSession()
+    }
     @AppStorage("showsPitchAccent") private var showAccent = true
     @State private var isGuidePresented = false
     @State private var confirmsReplacement = false
@@ -59,10 +68,21 @@ struct ContentView: View {
             if phase != .active { session.persist() }
         }
         .task {
+            #if DEBUG
+            if let scene = ProcessInfo.processInfo.environment["AKUMA_SCREENSHOT_SCENE"] {
+                showAccent = true
+                if scene == "guide" { isGuidePresented = true }
+                try? await Task.sleep(for: .seconds(1))
+                let marker = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+                    .appendingPathComponent("screenshot-ready")
+                try? Data(scene.utf8).write(to: marker, options: .atomic)
+                return
+            }
             if ProcessInfo.processInfo.arguments.contains("--showcase-data"), session.draft.isEmpty {
                 session.draft = Self.sampleParagraphs[0]
                 session.beginAnalysis()
             }
+            #endif
         }
     }
 

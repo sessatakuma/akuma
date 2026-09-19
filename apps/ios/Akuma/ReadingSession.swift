@@ -58,6 +58,38 @@ final class ReadingSession: ObservableObject {
         showsResult = saved?.showsResult == true && saved?.result != nil
     }
 
+    #if DEBUG
+    static func screenshotSession(scene: String) -> ReadingSession {
+        let suite = "dev.sessatakuma.akuma.screenshots"
+        let defaults = UserDefaults(suiteName: suite)!
+        defaults.removePersistentDomain(forName: suite)
+        let session = ReadingSession(defaults: defaults, analyzer: { _, _ in
+            throw URLError(.notConnectedToInternet)
+        })
+        if scene != "input" {
+            func word(_ surface: String, _ reading: String, _ accent: Int) -> AccentWord {
+                var value = AccentWord(surface: surface, units: [])
+                value.apply(reading: reading, accentPosition: accent)
+                return value
+            }
+            let words = [
+                word("今日", "きょう", 1), word("は", "は", -1),
+                word("いい", "いい", 1), word("天気", "てんき", 1),
+                word("です", "です", -1), word("。", "", -1),
+                AccentWord(surface: "", units: [], isLineBreak: true),
+                word("猫", "ねこ", 1), word("と", "と", -1),
+                word("一緒", "いっしょ", 0), word("に", "に", -1),
+                word("散歩", "さんぽ", 0), word("します", "します", 2),
+                word("。", "", -1)
+            ]
+            session.draft = "今日はいい天気です。\n猫と一緒に散歩します。"
+            session.result = ReadingResult(source: session.draft, words: words, originalWords: words)
+            session.showsResult = true
+        }
+        return session
+    }
+    #endif
+
     var isBusy: Bool { phase == .loading || phase == .streaming }
     var needsReplacementConfirmation: Bool {
         result?.hasEdits == true && result?.source != draft

@@ -13,6 +13,7 @@
 		A10000000000000000000014 /* AccentModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000025 /* AccentModel.swift */; };
 		A10000000000000000000015 /* MarkAccentAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000026 /* MarkAccentAPI.swift */; };
 		A10000000000000000000016 /* ReadingSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000027 /* ReadingSession.swift */; };
+		A10000000000000000000017 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A10000000000000000000028 /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +25,7 @@
 		A10000000000000000000025 /* AccentModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccentModel.swift; sourceTree = "<group>"; };
 		A10000000000000000000026 /* MarkAccentAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarkAccentAPI.swift; sourceTree = "<group>"; };
 		A10000000000000000000027 /* ReadingSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReadingSession.swift; sourceTree = "<group>"; };
+		A10000000000000000000028 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +57,7 @@
 				A10000000000000000000025 /* AccentModel.swift */,
 				A10000000000000000000023 /* Assets.xcassets */,
 				A10000000000000000000024 /* Info.plist */,
+				A10000000000000000000028 /* PrivacyInfo.xcprivacy */,
 			);
 			path = Akuma;
 			sourceTree = "<group>";
@@ -126,6 +129,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				A10000000000000000000013 /* Assets.xcassets in Resources */,
+				A10000000000000000000017 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
