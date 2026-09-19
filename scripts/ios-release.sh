@@ -10,7 +10,7 @@ Usage: bun run ios:release[:check]
 Set APPLE_TEAM_ID, IOS_MARKETING_VERSION (optional; defaults to the project),
 and IOS_BUILD_NUMBER (required positive integer, greater than previous uploads).
 Optional ASC_KEY_PATH, ASC_KEY_ID, ASC_ISSUER_ID must be supplied together.
-Bun loads .env.local; direct bash invocations use exported environment variables.
+iOS scripts load .env.local; exported environment variables take precedence.
 
 check: validate local configuration only (no signing, build, or upload).
 archive: create a signed Release archive and source/version record.

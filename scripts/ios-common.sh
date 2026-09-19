@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 IOS_ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+source "$IOS_ROOT_DIR/scripts/ios-load-local-env.sh"
 IOS_APP_DIR="$IOS_ROOT_DIR/apps/ios/Akuma"
 IOS_PROJECT_PATH="${IOS_PROJECT:-$IOS_ROOT_DIR/apps/ios/Akuma.xcodeproj}"
 IOS_SCHEME_NAME="${IOS_SCHEME:-Akuma}"

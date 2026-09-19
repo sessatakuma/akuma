@@ -10,9 +10,11 @@ team enrolled in the Apple Developer Program and register the bundle identifier
 `dev.sessatakuma.akuma`. Create the matching app record in App Store Connect.
 Existing account setup must be verified in Apple; the scripts cannot infer it.
 
-Copy the relevant settings from `.env.ios.example` into `.env.local`. Bun loads
-that file when running package scripts. When invoking a shell script directly,
-export the variables instead. Keep signing keys outside the repository.
+Copy the relevant settings from `.env.ios.example` into `.env.local`. The iOS scripts load
+`APPLE_TEAM_ID`, `IOS_*`, and `ASC_*` settings from that file, including when
+invoked directly with Bash. Exported variables take precedence. Values are
+literal: shell commands and variable expansion are not evaluated. Keep signing
+keys outside the repository.
 
 - `APPLE_TEAM_ID`: the signing team, required for distribution commands.
 - `IOS_MARKETING_VERSION`: defaults to the version in the Xcode project.

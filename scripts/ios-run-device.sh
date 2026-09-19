@@ -10,7 +10,7 @@ Usage: bun run iphone
 Build, install, and relaunch AkuMa on a paired iPhone without uninstalling it.
 Connect and unlock your iPhone before running. Xcode signing must be configured.
 
-Optional environment variables (also supported in .env.local via Bun):
+Optional environment variables (also supported in .env.local):
   IOS_DEVICE_ID                     Select a specific iPhone by UDID
   APPLE_TEAM_ID                     Override the project's signing team
   IOS_CONFIGURATION                Debug (default) or Release

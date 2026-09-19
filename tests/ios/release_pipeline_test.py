@@ -23,7 +23,7 @@ class ReleasePipelineTests(unittest.TestCase):
         self.env = {k: v for k, v in os.environ.items() if not k.startswith(('IOS_', 'ASC_', 'APPLE_', 'AKUMA_TEST_'))}
         self.env.update(PATH=str(self.bin) + ':' + os.environ['PATH'], APPLE_TEAM_ID='ABCDE12345',
                         IOS_MARKETING_VERSION='1.2.3', IOS_BUILD_NUMBER='42', IOS_RELEASE_DIR=str(self.artifacts),
-                        AKUMA_TEST_LOG=str(self.log), AKUMA_TEST_ROOT=str(ROOT))
+                        AKUMA_TEST_LOG=str(self.log), AKUMA_TEST_ROOT=str(ROOT), IOS_LOCAL_ENV_FILE='/dev/null')
         xcode = self.bin / 'xcodebuild'
         xcode.write_text('#!' + sys.executable + '\n' + '''
 import json, os, pathlib, plistlib, shutil, sys
@@ -64,6 +64,24 @@ else:
     def test_config_check_never_builds_or_uploads(self):
         self.run_action('check')
         self.assertEqual(self.calls(), [])
+
+    def test_local_settings_load_without_executing_shell(self):
+        settings = self.directory / '.env.local'
+        marker = self.directory / 'must-not-exist'
+        settings.write_text(
+            '  # Local signing configuration\nAPPLE_TEAM_ID="LOCAL12345"\n'
+            "IOS_BUILD_NUMBER='99'\n"
+            f'ASC_KEY_ID=$(touch {marker})\n'
+            'UNRELATED_SETTING=ignored\n')
+        env = self.env | {'IOS_LOCAL_ENV_FILE': str(settings)}
+        env.pop('APPLE_TEAM_ID')
+        command = 'source "$1"; printf "%s\\n" "$APPLE_TEAM_ID" "$IOS_BUILD_NUMBER" "$ASC_KEY_ID" "${UNRELATED_SETTING-unset}"'
+        result = subprocess.run(['bash', '-eu', '-c', command, 'test',
+                                 str(ROOT / 'scripts/ios-common.sh')],
+                                env=env, text=True, capture_output=True, check=True)
+        self.assertEqual(result.stdout.splitlines(),
+                         ['LOCAL12345', '42', f'$(touch {marker})', 'unset'])
+        self.assertFalse(marker.exists())
 
     def test_invalid_build_and_partial_credentials_fail_early(self):
         for build in ['', '0', '../42', '10000', '3;touch /tmp/no']:
