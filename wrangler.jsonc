@@ -2,6 +2,12 @@
     "$schema": "node_modules/wrangler/config-schema.json",
     "name": "akuma",
     "main": ".open-next/worker.js",
+    // Disable the auto-provisioned `akuma.*.workers.dev` route so production is
+    // served ONLY via the `custom_domain` routes below (#116 cleanup).
+    // `preview_urls` stays on (default) so per-version `<version>-akuma.*.workers.dev`
+    // preview deploys from Workers Builds keep working.
+    "workers_dev": false,
+    "preview_urls": true,
     "compatibility_date": "2025-03-25",
     "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
     "assets": {
@@ -19,21 +25,21 @@
         "logs": { "enabled": true, "head_sampling_rate": 1 },
         "traces": { "enabled": false },
     },
-    // ── Cutover (intentionally commented out in this PR) ──────────────────
-    // Uncomment the `routes` block in the cutover PR (#117). Until then the
-    // production hosts keep serving from Vercel and only `akuma-cf.*` points
-    // at this Worker. Because `custom_domain: true` lets Cloudflare
-    // auto-provision DNS at the zone, deploying with this block enabled is a
-    // one-way door — it flips `akuma.sessatakuma.dev` from Vercel to this
-    // Worker on the next `main` deploy. Keep it commented until sign-off.
-    //
-    // "routes": [
-    //     { "pattern": "akuma.sessatakuma.dev", "custom_domain": true },
-    //     { "pattern": "accent-marker.sessatakuma.dev", "custom_domain": true },
-    // ],
+    // Production cutover (#117): `custom_domain: true` lets Cloudflare
+    // auto-provision DNS + managed TLS at the `sessatakuma.dev` zone. The next
+    // `main` deploy via Workers Builds will overwrite the `akuma.*` and
+    // `accent-marker.*` CNAMEs from `vercel-dns-017.com` → this Worker, flipping
+    // production from Vercel to Cloudflare. This is a one-way door — see #117
+    // for the pre/post-cutover checklists.
+    "routes": [
+        { "pattern": "akuma.sessatakuma.dev", "custom_domain": true },
+        { "pattern": "accent-marker.sessatakuma.dev", "custom_domain": true },
+    ],
     // Secrets (set via `wrangler secret put` or the dashboard, NOT here):
     //   MARK_ACCENT_API_KEY        (required)
     //   MARK_ACCENT_UPSTREAM_URL   (optional; defaults to api.sessatakuma.dev)
+    // Public analytics IDs are build variables (see docs/deployment.md) so Next.js
+    // can inline them while building; do not declare them as runtime vars here.
     // Local dev: see README — secrets/vars are read from .env on `bun dev`
     // and from the Worker's runtime vars on `bun run preview`.
 }

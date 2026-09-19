@@ -39,4 +39,6 @@ jobs:
           IOS_DERIVED_DATA_PATH: build/ReleaseValidation
         run: bash scripts/ios-build.sh
       - name: Validate packaged app
-        run: python3 scripts/ios-validate-app.py build/ReleaseValidation/Build/Products/Release-iphoneos/Akuma.app
+        run: >-
+          python3 scripts/ios-validate-app.py
+          build/ReleaseValidation/Build/Products/Release-iphoneos/Akuma.app
